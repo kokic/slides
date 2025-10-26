@@ -237,7 +237,7 @@ Blogs, wikis, and personal notes may appear to be different types of web pages, 
 
 / Trusted Extension: JavaScript has become the de facto standard for web development, but with the development of hardware and software technology, JavaScript has too many characteristics that are no longer suitable for this era.
 
-  For example, without the module concepts designed and promoted by CommonJS, AMD, and ESM, it is almost difficult to develop large-scale programs using JavaScript Its modern typed version TypeScript faces similar issues as C++and C in the past: it must be forced to be compatible with poor JavaScript features at the underlying level. 
+  For example, without the module concepts designed and promoted by CommonJS, AMD, and ESM, it is almost difficult to develop large-scale programs using JavaScript. Its modern typed version TypeScript faces similar issues as C++ and C in the past: it must be forced to be compatible with poor JavaScript features at the underlying level. 
 
 But the emergence of WASM and _MoonBit_ provided a promising solution to this matter. 
 
@@ -261,7 +261,7 @@ But the emergence of WASM and _MoonBit_ provided a promising solution to this ma
 
 == From $n$Lab to 1Lab
 
-$n$Lab and 1Lab are basically the final effects that can be presented by _linking_ and _embedding_ functions, but in terms of the tendency towards solidification, because 1Lab defines and derives all items in _formal language_ i.e., code. This tendency of 1Lab is much stronger. 
+$n$Lab and 1Lab are basically the final effects that can be presented by _linking_ and _embedding_ functions, but in terms of the tendency towards solidification, because 1Lab defines and derives all terms in _formal language_ i.e., code. This tendency of 1Lab is much stronger. 
 
 #emph-block(
   fill: rgb("FDF7E4"),
@@ -290,7 +290,7 @@ $n$Lab and 1Lab are basically the final effects that can be presented by _linkin
 
 We have actually come into contact with Forester or Kodama's _philosophy of solidification_ in many places, such as
 
-- Static analysis: For each item, display its _definition_ and _references_. 
+- Static analysis: For each term, display its _definition_ and _references_. 
 
 - Dependency analysis: For each module, calculate its' _"imports"_ and _"imported by"_. 
 
