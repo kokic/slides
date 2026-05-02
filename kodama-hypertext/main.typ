@@ -33,7 +33,6 @@
 
     To see an example, go to: https://kokic.github.io/riemann-surfaces.
   ],
-  paper: "presentation-4-3",
 )
 
 #let latex = [L#h(-0.2em)#text(baseline: -0.2em, size: 0.8em)[A]#h(-0.1em)T#h(-0.15em)#text(baseline: 0.2em)[E]#h(-0.1em)X]
