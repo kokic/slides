@@ -4,12 +4,17 @@
 #let slides-catalogue(outline-text, heading-font, outline-bgcolor) = {
   set page(margin: (top: 0%, bottom: 0%, left: 0%, right: 0%))
   set outline(title: none, depth: 2, indent: 2em)
+
+  let outline-font-size = (
+    lv1: 25pt,
+    lv2: 20pt,
+  )
   show outline.entry.where(level: 1): it => {
     v(30pt, weak: true)
-    text(fill: outline-bgcolor.lighten(10%), size: 20pt, font: heading-font, weight: "bold", it)
+    text(fill: outline-bgcolor.lighten(10%), size: outline-font-size.lv1, font: heading-font, weight: "bold", it)
   }
   show outline.entry.where(level: 2): it => {
-    text(fill: outline-bgcolor.lighten(20%), size: 15pt, font: heading-font, weight: "regular", it)
+    text(fill: outline-bgcolor.lighten(20%), size: outline-font-size.lv2, font: heading-font, weight: "regular", it)
   }
 
   grid(
@@ -30,44 +35,61 @@
 
 #let slides-section-tabs() = context {
   let sections = ()
-  let current-title = none
-  let level2-count = 0
+  let level1-headings = query(heading.where(level: 1))
+  let current-page = counter(page).at(here()).at(0)
+  let episode-end = query(<slides-episodes-end>)
+  let final-page = if episode-end.len() > 0 {
+    counter(page).at(episode-end.last().location()).at(0)
+  } else {
+    counter(page).final().at(0)
+  }
 
-  for item in query(heading.where(level: 1).or(heading.where(level: 2))) {
-    if item.level == 1 {
-      if current-title != none {
-        sections.push((title: current-title, lv2-count: level2-count))
-      }
-      current-title = item.body
-      level2-count = 0
-    } else if item.level == 2 and current-title != none {
-      level2-count += 1
+  let i = 0
+  while i < level1-headings.len() {
+    let item = level1-headings.at(i)
+    let start-page = counter(page).at(item.location()).at(0)
+    let end-page = if i + 1 < level1-headings.len() {
+      counter(page).at(level1-headings.at(i + 1).location()).at(0) - 1
+    } else {
+      final-page
     }
+
+    let page-count = end-page - start-page + 1
+    if page-count < 1 {
+      page-count = 1
+    }
+
+    sections.push((title: item.body, start-page: start-page, page-count: page-count))
+    i += 1
   }
 
-  if current-title != none {
-    sections.push((title: current-title, lv2-count: level2-count))
-  }
-
-  // let tab-count = sections.len()
-  set page(margin: 0em)
+  let columns = ()
+  let cells = ()
 
   for section in sections {
-    box(fill: builtin.colors.deep-red-2, width: 1fr, inset: (x: 1em, y: 1em), text(fill: white)[
-      #section.title \
+    columns.push(1fr)
+    cells.push(box(fill: builtin.colors.deep-red-2, width: 100%, inset: (x: 1em, y: 0.5em), text(
+      fill: white,
+      size: 16pt,
+    )[
+      #block(above: 0em, below: 0.25em, text(font: "Alegreya Sans SC", section.title)) 
       #{
         let i = 0
-        while i < section.lv2-count {
-          math.circle
+        while i < section.page-count {
+          if section.start-page + i == current-page {
+            math.circle.filled
+          } else {
+            math.circle
+          }
           i = i + 1
         }
       }
-    ])
+    ]))
   }
 
-  // math.circle; math.circle.filled
-
-  // (sections.len(), )
+  if cells.len() > 0 {
+    grid(columns: columns, ..cells)
+  }
 }
 
 // content page
@@ -76,7 +98,6 @@
   episode-font,
   text-font-sans,
   subsection-prefix,
-  display-title-line: false,
   outline-bgcolor,
   content-title-color,
   title-line-color,
@@ -84,42 +105,32 @@
   display-page-counter: true,
   page-counter: () => [#counter(page).display() ~/~ #counter(page).final().at(0)],
 ) = {
+  let margin-x = 2em
   set page(
-    margin: (top: 20%, bottom: 5%, left: 5%, right: 5%),
+    margin: (left: margin-x, right: margin-x),
     header: context {
-      let loc = here()
-      let elem = heading.where(level: 1).before(loc)
-      let titles = query(elem)
-      if titles.len() > 0 {
-        let title = titles.last().body
-        grid(
-          rows: (70%, 10%),
-          row-gutter: 0%,
-          // content title
-          grid(align(right + horizon, text(fill: content-title-color, size: 25pt, font: episode-font, title))),
-          if display-title-line {
-            align(center + bottom, line(length: 100%, stroke: (paint: title-line-color, thickness: 2pt)))
-          },
-        )
-      }
+      place(left, dx: -margin-x, box(width: 100% + margin-x * 2, slides-section-tabs()))
     },
     footer: context {
       if display-page-counter {
-        place(right, dx: 5%, page-counter())
+        place(right, dx: margin-x, page-counter())
       }
     },
   )
 
-  show heading.where(level: 1): it => {
-    set page(
-      margin: (top: 5%, bottom: 5%, left: 5%, right: 5%),
-      fill: chapter-bgcolor,
-      header: none,
-      background: none,
-      footer: none,
-    )
-    align(center + horizon, text(fill: white, size: 40pt, font: episode-font, it))
-  }
+  // episode
+  // show heading.where(level: 1): it => {
+  //   set page(
+  //     margin: (top: 5%, bottom: 5%, left: 5%, right: 5%),
+  //     fill: chapter-bgcolor,
+  //     header: none,
+  //     background: none,
+  //     footer: none,
+  //   )
+  //   align(center + horizon, text(fill: white, size: 40pt, font: episode-font, it))
+  // }
+  //
+  show heading.where(level: 1): it => {}
 
   show heading.where(level: 2): it => context {
     let loc = here()
@@ -145,10 +156,15 @@
       pagebreak()
     }
 
-    align(top, text(size: 20pt, font: episode-font, subsection-prefix + " " + it.body))
-    v(1em)
+    block(width: 100%, inset: (x: -1em), below: 1em, text(
+      size: 25pt,
+      weight: "bold",
+      font: episode-font,
+      subsection-prefix + " " + it.body,
+    ))
   }
   body
+  [#metadata(none) <slides-episodes-end>]
 }
 
 
@@ -167,7 +183,6 @@
   outline-text: [*Outline*],
   end-text: align(center)[*Thanks!*],
   subsection-prefix: [#math.section],
-  display-title-line: false,
   color-scheme: monochrome(builtin.colors.deep-red-1),
   font-scheme: builtin.font.sans,
   paper: "presentation-16-9",
@@ -176,10 +191,11 @@
   set page(paper: paper)
   show heading: set text(font: font-scheme.heading-font, weight: "regular")
   show math.equation: set text(font: font-scheme.math-font)
-  set text(font: font-scheme.text-font, size: 18pt, weight: "regular")
+  // 18pt
+  set text(font: font-scheme.text-font, weight: "regular")
 
   prologue(title: title, subtitle: subtitle, author: author, date: date)
-  slides-catalogue(outline-text, font-scheme.heading-font, color-scheme.outline-bg)
+  // slides-catalogue(outline-text, font-scheme.heading-font, color-scheme.outline-bg)
   counter(page).update(1)
 
   slides-episodes(
@@ -191,7 +207,6 @@
     color-scheme.content-title,
     color-scheme.title-line,
     color-scheme.chapter-bg,
-    display-title-line: display-title-line,
   )
   slides-epilogue(end-text, color-scheme.epilogue-bg)
 }
