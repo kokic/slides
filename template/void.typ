@@ -28,6 +28,48 @@
   )
 }
 
+#let slides-section-tabs() = context {
+  let sections = ()
+  let current-title = none
+  let level2-count = 0
+
+  for item in query(heading.where(level: 1).or(heading.where(level: 2))) {
+    if item.level == 1 {
+      if current-title != none {
+        sections.push((title: current-title, lv2-count: level2-count))
+      }
+      current-title = item.body
+      level2-count = 0
+    } else if item.level == 2 and current-title != none {
+      level2-count += 1
+    }
+  }
+
+  if current-title != none {
+    sections.push((title: current-title, lv2-count: level2-count))
+  }
+
+  // let tab-count = sections.len()
+  set page(margin: 0em)
+
+  for section in sections {
+    box(fill: builtin.colors.deep-red-2, width: 1fr, inset: (x: 1em, y: 1em), text(fill: white)[
+      #section.title \
+      #{
+        let i = 0
+        while i < section.lv2-count {
+          math.circle
+          i = i + 1
+        }
+      }
+    ])
+  }
+
+  // math.circle; math.circle.filled
+
+  // (sections.len(), )
+}
+
 // content page
 #let slides-episodes(
   body,
@@ -47,16 +89,19 @@
     header: context {
       let loc = here()
       let elem = heading.where(level: 1).before(loc)
-      let title = query(elem).last().body
-      grid(
-        rows: (70%, 10%),
-        row-gutter: 0%,
-        // content title
-        grid(align(right + horizon, text(fill: content-title-color, size: 25pt, font: episode-font, title))),
-        if display-title-line {
-          align(center + bottom, line(length: 100%, stroke: (paint: title-line-color, thickness: 2pt)))
-        },
-      )
+      let titles = query(elem)
+      if titles.len() > 0 {
+        let title = titles.last().body
+        grid(
+          rows: (70%, 10%),
+          row-gutter: 0%,
+          // content title
+          grid(align(right + horizon, text(fill: content-title-color, size: 25pt, font: episode-font, title))),
+          if display-title-line {
+            align(center + bottom, line(length: 100%, stroke: (paint: title-line-color, thickness: 2pt)))
+          },
+        )
+      }
     },
     footer: context {
       if display-page-counter {
@@ -119,12 +164,10 @@
   author: [Hydrangea Kokic],
   date: datetime.today().display("時 [year] 年 [month] 月 [day] 日"),
   prologue: builtin.prologue.simple,
-
   outline-text: [*Outline*],
   end-text: align(center)[*Thanks!*],
   subsection-prefix: [#math.section],
   display-title-line: false,
-
   color-scheme: monochrome(builtin.colors.deep-red-1),
   font-scheme: builtin.font.sans,
   paper: "presentation-16-9",
