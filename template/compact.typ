@@ -1,37 +1,37 @@
 
 #import "scheme.typ": builtin, monochrome
 
-#let slides-catalogue(outline-text, heading-font, outline-bgcolor) = {
-  set page(margin: (top: 0%, bottom: 0%, left: 0%, right: 0%))
-  set outline(title: none, depth: 2, indent: 2em)
+// #let slides-catalogue(outline-text, heading-font, outline-bgcolor) = {
+//   set page(margin: (top: 0%, bottom: 0%, left: 0%, right: 0%))
+//   set outline(title: none, depth: 2, indent: 2em)
 
-  let outline-font-size = (
-    lv1: 25pt,
-    lv2: 20pt,
-  )
-  show outline.entry.where(level: 1): it => {
-    v(30pt, weak: true)
-    text(fill: outline-bgcolor.lighten(10%), size: outline-font-size.lv1, font: heading-font, weight: "bold", it)
-  }
-  show outline.entry.where(level: 2): it => {
-    text(fill: outline-bgcolor.lighten(20%), size: outline-font-size.lv2, font: heading-font, weight: "regular", it)
-  }
-
-  grid(
-    columns: (30%, 50%),
-    column-gutter: 10%,
-    align(
-      center + horizon,
-      box(fill: outline-bgcolor, width: 100%, height: 100%, text(
-        fill: white,
-        size: 40pt,
-        hyphenate: true,
-        outline-text,
-      )),
-    ),
-    align(center + horizon, outline()),
-  )
-}
+//   let outline-font-size = (
+//     lv1: 25pt,
+//     lv2: 20pt,
+//   )
+//   show outline.entry.where(level: 1): it => {
+//     v(30pt, weak: true)
+//     text(fill: outline-bgcolor.lighten(10%), size: outline-font-size.lv1, font: heading-font, weight: "bold", it)
+//   }
+//   show outline.entry.where(level: 2): it => {
+//     text(fill: outline-bgcolor.lighten(20%), size: outline-font-size.lv2, font: heading-font, weight: "regular", it)
+//   }
+  
+//   grid(
+//     columns: (30%, 50%),
+//     column-gutter: 10%,
+//     align(
+//       center + horizon,
+//       box(fill: outline-bgcolor, width: 100%, height: 100%, text(
+//         fill: white,
+//         size: 40pt,
+//         hyphenate: true,
+//         outline-text,
+//       )),
+//     ),
+//     align(center + horizon, outline()),
+//   )
+// }
 
 #let slides-section-tabs() = context {
   let sections = ()
@@ -77,9 +77,9 @@
         let i = 0
         while i < section.page-count {
           if section.start-page + i == current-page {
-            math.circle.filled
+            box(inset: (x: 2pt), circle(radius: 3pt, stroke: white, fill: white))
           } else {
-            math.circle
+            box(inset: (x: 2pt), circle(radius: 3pt, stroke: white))
           }
           i = i + 1
         }
@@ -95,8 +95,7 @@
 // content page
 #let slides-episodes(
   body,
-  episode-font,
-  text-font-sans,
+  font-scheme,
   subsection-prefix,
   outline-bgcolor,
   content-title-color,
@@ -113,23 +112,12 @@
     },
     footer: context {
       if display-page-counter {
-        place(right, dx: margin-x, page-counter())
+        place(right, dx: margin-x, page-counter() + [#h(1em)])
       }
     },
   )
 
-  // episode
-  // show heading.where(level: 1): it => {
-  //   set page(
-  //     margin: (top: 5%, bottom: 5%, left: 5%, right: 5%),
-  //     fill: chapter-bgcolor,
-  //     header: none,
-  //     background: none,
-  //     footer: none,
-  //   )
-  //   align(center + horizon, text(fill: white, size: 40pt, font: episode-font, it))
-  // }
-  //
+  // hidden
   show heading.where(level: 1): it => {}
 
   show heading.where(level: 2): it => context {
@@ -158,8 +146,8 @@
 
     block(width: 100%, inset: (x: -1em), below: 1em, text(
       size: 25pt,
-      weight: "bold",
-      font: episode-font,
+      weight: font-scheme.heading-weight,
+      font: font-scheme.heading-font,
       subsection-prefix + " " + it.body,
     ))
   }
@@ -179,7 +167,7 @@
   subtitle: [I believe what you said],
   author: [Hydrangea Kokic],
   date: datetime.today().display("時 [year] 年 [month] 月 [day] 日"),
-  prologue: builtin.prologue.simple,
+  prologue: builtin.prologue.invert,
   outline-text: [*Outline*],
   end-text: align(center)[*Thanks!*],
   subsection-prefix: [#math.section],
@@ -189,10 +177,10 @@
   body,
 ) = {
   set page(paper: paper)
-  show heading: set text(font: font-scheme.heading-font, weight: "regular")
+  show heading: set text(font: font-scheme.heading-font, weight: font-scheme.heading-weight)
   show math.equation: set text(font: font-scheme.math-font)
   // 18pt
-  set text(font: font-scheme.text-font, weight: "regular")
+  set text(font: font-scheme.text-font, weight: "light")
 
   prologue(title: title, subtitle: subtitle, author: author, date: date)
   // slides-catalogue(outline-text, font-scheme.heading-font, color-scheme.outline-bg)
@@ -200,8 +188,7 @@
 
   slides-episodes(
     body,
-    font-scheme.heading-font,
-    font-scheme.text-font,
+    font-scheme,
     subsection-prefix,
     color-scheme.outline-bg,
     color-scheme.content-title,
