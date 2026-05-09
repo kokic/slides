@@ -72,7 +72,7 @@
       fill: white,
       size: 16pt,
     )[
-      #block(above: 0em, below: 0.25em, text(font: "Alegreya Sans SC", section.title)) 
+      #block(above: 0em, below: 0.3em, text(font: "Alegreya Sans SC", section.title))
       #{
         let i = 0
         while i < section.page-count {
