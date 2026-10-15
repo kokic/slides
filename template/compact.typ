@@ -1,37 +1,4 @@
-
 #import "scheme.typ": builtin, monochrome
-
-// #let slides-catalogue(outline-text, heading-font, outline-bgcolor) = {
-//   set page(margin: (top: 0%, bottom: 0%, left: 0%, right: 0%))
-//   set outline(title: none, depth: 2, indent: 2em)
-
-//   let outline-font-size = (
-//     lv1: 25pt,
-//     lv2: 20pt,
-//   )
-//   show outline.entry.where(level: 1): it => {
-//     v(30pt, weak: true)
-//     text(fill: outline-bgcolor.lighten(10%), size: outline-font-size.lv1, font: heading-font, weight: "bold", it)
-//   }
-//   show outline.entry.where(level: 2): it => {
-//     text(fill: outline-bgcolor.lighten(20%), size: outline-font-size.lv2, font: heading-font, weight: "regular", it)
-//   }
-  
-//   grid(
-//     columns: (30%, 50%),
-//     column-gutter: 10%,
-//     align(
-//       center + horizon,
-//       box(fill: outline-bgcolor, width: 100%, height: 100%, text(
-//         fill: white,
-//         size: 40pt,
-//         hyphenate: true,
-//         outline-text,
-//       )),
-//     ),
-//     align(center + horizon, outline()),
-//   )
-// }
 
 #let slides-section-tabs() = context {
   let sections = ()
